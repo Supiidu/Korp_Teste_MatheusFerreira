@@ -1,0 +1,64 @@
+<div class="min-h-screen bg-gray-100 p-8">
+  <div class="max-w-4xl mx-auto flex flex-col gap-8">
+    <!-- Formulário -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg">
+      <h1 class="text-2xl font-bold mb-6">Cadastrar Produto</h1>
+      <form (ngSubmit)="cadastrar()" class="flex flex-col gap-4">
+        <input
+          [(ngModel)]="produto.codigo"
+          name="codigo"
+          placeholder="Código do produto"
+          class="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <input
+          [(ngModel)]="produto.descricao"
+          name="nome"
+          placeholder="Nome do produto"
+          class="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <input
+          [(ngModel)]="produto.saldo"
+          name="saldo"
+          type="number"
+          placeholder="Saldo inicial"
+          class="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <button
+          type="submit"
+          class="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition font-semibold"
+        >
+          Cadastrar
+        </button>
+      </form>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-white p-8 rounded-2xl shadow-lg">
+      <h2 class="text-xl font-bold mb-4">Produtos em Estoque</h2>
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-blue-50 text-blue-700">
+            <th class="p-3 rounded-tl-lg">Código</th>
+            <th class="p-3">Descrição</th>
+            <th class="p-3 rounded-tr-lg">Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of produtos; track p.id) {
+            <tr class="border-t hover:bg-gray-50 transition">
+              <td class="p-3">{{ p.codigo }}</td>
+              <td class="p-3">{{ p.descricao }}</td>
+              <td class="p-3">{{ p.saldo }}</td>
+            </tr>
+          }
+          @if (produtos.length === 0) {
+            <tr>
+              <td colspan="3" class="p-3 text-center text-gray-400">Nenhum produto cadastrado.</td>
+            </tr>
+          }
+          <p>Total: {{ produtos.length }}</p>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,182 @@
+<div class="min-h-screen bg-gray-100 p-8">
+  <div class="max-w-4xl mx-auto flex flex-col gap-8">
+    <!-- Tabs -->
+    <div class="flex gap-2">
+      <button
+        (click)="tabAtiva = 'criar'"
+        [class]="
+          tabAtiva === 'criar'
+            ? 'bg-blue-500 text-white p-3 rounded-lg font-semibold'
+            : 'bg-white text-blue-500 p-3 rounded-lg font-semibold hover:bg-blue-50 transition'
+        "
+      >
+        Criar Nota
+      </button>
+      <button
+        (click)="tabAtiva = 'visualizar'"
+        [class]="
+          tabAtiva === 'visualizar'
+            ? 'bg-blue-500 text-white p-3 rounded-lg font-semibold'
+            : 'bg-white text-blue-500 p-3 rounded-lg font-semibold hover:bg-blue-50 transition'
+        "
+      >
+        Notas Existentes
+      </button>
+    </div>
+
+    <!-- Tab: Criar Nota -->
+    @if (tabAtiva === 'criar') {
+      <div class="bg-white p-8 rounded-2xl shadow-lg flex flex-col gap-4">
+        <h2 class="text-xl font-bold">Nova Nota Fiscal</h2>
+        <p class="text-gray-500">Clique no botão abaixo para abrir uma nova nota fiscal.</p>
+        <button
+          (click)="criarNota()"
+          class="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition font-semibold w-fit"
+        >
+          Criar Nota
+        </button>
+      </div>
+    }
+
+    <!-- Tab: Notas Existentes -->
+    @if (tabAtiva === 'visualizar') {
+      <div class="flex gap-8">
+        <!-- Lista de notas -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg flex flex-col gap-3 w-64 shrink-0">
+          <h2 class="text-lg font-bold">Notas</h2>
+          @for (nota of notas; track nota.id) {
+            <button
+              (click)="selecionarNota(nota)"
+              [class]="
+                notaSelecionada?.id === nota.id
+                  ? 'bg-blue-500 text-white p-3 rounded-lg text-left'
+                  : 'bg-gray-100 hover:bg-blue-50 p-3 rounded-lg text-left transition'
+              "
+            >
+              <p class="font-semibold">Nota #{{ nota.numero }}</p>
+              <p class="text-sm">{{ nota.status }}</p>
+            </button>
+          }
+          @if (notas.length === 0) {
+            <p class="text-gray-400 text-sm">Nenhuma nota encontrada.</p>
+          }
+        </div>
+
+        <!-- Detalhe da nota -->
+        @if (notaSelecionada) {
+          <div class="bg-white p-6 rounded-2xl shadow-lg flex-1 flex flex-col gap-6">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-bold">Nota #{{ notaSelecionada.numero }}</h2>
+              <span
+                [class]="
+                  notaSelecionada.status === 0
+                    ? 'bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold'
+                    : 'bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold'
+                "
+              >
+                {{ notaSelecionada.status === 0 ? 'Aberta' : 'Fechada' }}
+              </span>
+            </div>
+
+            <!-- Itens da nota -->
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-blue-50 text-blue-700">
+                  <th class="p-3">Código</th>
+                  <th class="p-3">Quantidade</th>
+                  @if (notaSelecionada.status === 0) {
+                    <th class="p-3">Ação</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of notaSelecionada.itens; track item.id) {
+                  <tr class="border-t hover:bg-gray-50 transition">
+                    <td class="p-3">{{ item.codigoProduto }}</td>
+                    <td class="p-3">{{ item.quantidade }}</td>
+                    @if (notaSelecionada.status === 0) {
+                      <td class="p-3">
+                        <button
+                          (click)="removerItem(item.id)"
+                          class="bg-red-100 text-red-600 px-3 py-1 rounded-lg hover:bg-red-200 transition text-sm font-semibold"
+                        >
+                          Remover
+                        </button>
+                      </td>
+                    }
+                  </tr>
+                }
+                @if (notaSelecionada.itens.length === 0) {
+                  <tr>
+                    <td colspan="3" class="p-3 text-center text-gray-400">
+                      Nenhum item adicionado.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <!-- Adicionar item -->
+            @if (notaSelecionada.status === 0) {
+              <div class="flex gap-3">
+                <select
+                  [(ngModel)]="novoItem.codigoProduto"
+                  name="codigo"
+                  class="border p-3 rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">Selecione um produto</option>
+                  @for (p of produtos; track p.id) {
+                    <option [value]="p.codigo">{{ p.descricao }} ({{ p.codigo }})</option>
+                  }
+                </select>
+                <input
+                  [(ngModel)]="novoItem.quantidade"
+                  name="quantidade"
+                  type="number"
+                  placeholder="Qtd"
+                  class="border p-3 rounded-lg w-24 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+                <button
+                  (click)="adicionarItem()"
+                  class="bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600 transition font-semibold"
+                >
+                  Adicionar
+                </button>
+              </div>
+
+              <!-- Fechar nota -->
+              @if (fechando) {
+                <div
+                  class="flex flex-col items-center justify-center gap-3 p-6 bg-blue-50 rounded-xl"
+                >
+                  <div
+                    class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+                  ></div>
+                  <p class="text-blue-600 font-semibold">Processando nota fiscal...</p>
+                </div>
+              } @else {
+                @if (erroBaixar) {
+                  <div class="bg-red-100 text-red-700 p-3 rounded-lg">
+                    {{ erroBaixar }}
+                  </div>
+                }
+                <button
+                  (click)="fecharNota()"
+                  class="bg-red-500 text-white p-3 rounded-lg hover:bg-red-600 transition font-semibold flex items-center justify-center gap-2"
+                >
+                  🖨️ Imprimir e Fechar Nota
+                </button>
+              }
+            }
+          </div>
+        } @else {
+          <div
+            class="bg-white p-6 rounded-2xl shadow-lg flex-1 flex items-center justify-center text-gray-400"
+          >
+            Selecione uma nota para visualizar.
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
