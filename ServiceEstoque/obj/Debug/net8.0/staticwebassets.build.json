@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "c1eY3Qlpxpu7aGIzvEMIdJCEXnwy9WXutq67dfksvGE=",
+  "Source": "ServiceEstoque",
+  "BasePath": "_content/ServiceEstoque",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
